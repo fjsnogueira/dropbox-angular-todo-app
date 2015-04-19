@@ -95,8 +95,8 @@ angular
             .init()
             .then(function(authenticated) {
                 if(authenticated) {
-                    $scope.usertype = 'authenticated';
                     $scope.loading = true;
+                    $scope.usertype = 'authenticated';
 
                     Dropbox
                         .getStore()

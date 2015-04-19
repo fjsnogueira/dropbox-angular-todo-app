@@ -1,12 +1,12 @@
-# dropbox-demo
+# Dropbox / Angular Todo App
 
-super simple demo using dropbox datastore to create a todo app
+A super simple demo using Dropbox Datastore and Angular 1.3 to create a basic Todo app.
 
 ## Installation
 
 ```
-git clone https://github.com/stephanepericat/dropbox-demo.git
-cd dropbox-demo/
+git clone https://github.com/stephanepericat/dropbox-angular-todo-app.git
+cd dropbox-angular-todo-app/
 npm i
 ```
 
