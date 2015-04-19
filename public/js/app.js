@@ -36,8 +36,8 @@ var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
                 $('#main').fadeIn();
             } else {
                 $('#main').fadeOut();
-                
-                $('#link-button').click( function() {
+
+                $('#link-button').click(function() {
                     client.authenticate();
                 });
             }
