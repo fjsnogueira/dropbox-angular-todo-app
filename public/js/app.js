@@ -1,98 +1,135 @@
-var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
-    TodosApp = TodosApp || {
-        todosList: null,
+angular
+    .module('TodoApp', [])
+    .factory('Dropbox', ['$window', '$q', function($window, $q) {
+        var client = new $window.Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
+            todoList = null;
 
-        init: function() {
-            client.authenticate({
-                interactive: false
-            }, function(err, reS) {
-                if (err) {
-                    console.log('OAuth error: ' + err);
-                }
-            });
+        function init() {
+            var d = $q.defer();
 
-            TodosApp.checkClient();
-        },
-
-        checkClient: function() {
-            if (client.isAuthenticated()) {
-
-                $('#link-button').fadeOut();
-
-                client
-                    .getDatastoreManager()
-                    .openDefaultDatastore(function(err, Datastore) {
-                        if (err) {
-                            console.log('Datastore error: ' + err);
-                        }
-                        TodosApp.todosList = Datastore.getTable('todos');
-
-                        TodosApp.updateTodos();
-                        Datastore.recordsChanged.addListener(TodosApp.updateTodos);
-                    });
-
-                $('#add-todo').submit(TodosApp.createTodo);
-
-                $('#main').fadeIn();
-            } else {
-                $('#main').fadeOut();
-
-                $('#link-button').click(function() {
-                    client.authenticate();
-                });
-            }
-        },
-
-        createTodo: function(e) {
-            e.preventDefault();
-
-            if($('#todo').val() !== '') {
-                TodosApp.todosList.insert({
-                    todo: $('#todo').val(),
-                    created: new Date(),
-                    completed: false
+            client
+                .authenticate({
+                    interactive: false
+                }, function(err, res) {
+                    if(err) d.reject(err);
+                    d.resolve(checkAuth());
                 });
 
-                $('#todo').val('');
-            }
-        },
-
-        updateTodos: function() {
-            var list = $('#todos'),
-                todoTemplate = $($('#todo-template').text()),
-                records = TodosApp.todosList.query();
-
-            list.empty();
-
-            $(records).each(function(idx, record) {
-                var item = todoTemplate.clone();
-
-                item.attr('data-record-id', record.getId());
-                item.find('.todo-idx').text(idx);
-                item.find('.todo-description').text(record.get('todo'));
-
-                if(record.get('completed')) {
-                    item.find('.todo-description').toggleClass('completed');
-                    item.find('input[type="checkbox"]').attr('checked', 'checked');
-                }
-
-                list.append(item);
-            });
-
-            list.find('button').click(function(e) {
-                e.preventDefault();
-
-                var id = $(this).parents('tr').attr('data-record-id');
-                TodosApp.todosList.get(id).deleteRecord();
-            });
-
-            list.find('input[type="checkbox"]').click(function(e) {
-                var el = $(e.target),
-                    id = el.parents('tr').attr('data-record-id');
-
-                TodosApp.todosList.get(id).set('completed', el.is(':checked'));
-            });
+            return d.promise;
         }
-    };
 
-$('document').ready(TodosApp.init);
+        function checkAuth() {
+            return client.isAuthenticated();
+        }
+
+        function getStore() {
+            var d = $q.defer();
+
+            client
+                .getDatastoreManager()
+                .openDefaultDatastore(function(err, Datastore) {
+                    if (err) d.reject(err);
+                    d.resolve({
+                        onChange: function(cb) {Datastore.recordsChanged.addListener(cb);},
+                        getTodos: getTodos(Datastore),
+                        addTask: addTask(Datastore),
+                        removeTask: removeTask(Datastore),
+                        updateTask: updateTask(Datastore)
+                    });
+                });
+
+            return d.promise;
+
+        }
+
+        function getTodos(DataStore) {
+            return function() {
+                return DataStore.getTable('todos').query();
+            };
+        }
+
+        function addTask(DataStore) {
+            return function(data) {
+                return DataStore.getTable('todos').insert(data);
+            };
+        }
+
+        function removeTask(DataStore) {
+            return function(id) {
+                return DataStore.getTable('todos').get(id).deleteRecord();
+            };
+        }
+
+        function updateTask(DataStore) {
+            return function(id, done) {
+                return DataStore.getTable('todos').get(id).set('completed', done);
+            };
+        }
+
+        function authenticate() {
+            client.authenticate();
+        }
+
+        function getAllItems() {
+            if(todoList) {
+                return todoList.query();
+            }
+        }
+
+        return {
+            init: init,
+            authenticate: authenticate,
+            getStore: getStore
+        };
+    }])
+    .controller('TodoCtrl', ['$scope', 'Dropbox', function($scope, Dropbox) {
+        $scope.usertype = 'guest';
+        $scope.todos = [];
+
+        $scope.store = null;
+        $scope.updateTodos = null;
+
+        $scope.authenticate = Dropbox.authenticate;
+
+        Dropbox
+            .init()
+            .then(function(authenticated) {
+                if(authenticated) {
+                    $scope.usertype = 'authenticated';
+                    Dropbox
+                        .getStore()
+                        .then(function(store) {
+                            $scope.store = store;
+
+                            $scope.updateTodos = function() {
+                                $scope.todos = $scope.store.getTodos();
+                            };
+
+                            $scope.addTask = function(description) {
+                                $scope.store.addTask({
+                                    todo: description,
+                                    created: new Date(),
+                                    completed: false
+                                });
+                            };
+
+                            $scope.removeTask = function(id) {
+                                $scope.store.removeTask(id);
+                            };
+
+                            $scope.updateTask = function(e, id) {
+                                $scope.store.updateTask(id, e.target.checked);
+                            };
+
+                            $scope.updateTodos();
+                            $scope.store.onChange($scope.updateTodos);
+                        });
+                }
+            });
+    }]);
+
+angular
+    .element(document)
+    .ready(function() {
+        angular.bootstrap(document.body, ['TodoApp']);
+    });
