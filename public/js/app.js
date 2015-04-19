@@ -62,52 +62,12 @@ var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
 
             list.empty();
 
-            // fixture
-            // if(records.length === 0) {
-            //     records.push({
-            //         getId: function() {
-            //             return 1;
-            //         },
-            //         get: function(type) {
-            //             switch (type) {
-            //                 case 'todo':
-            //                     return 'Write some code';
-            //                 break;
-            //                 case 'completed':
-            //                     return false;
-            //                 break;
-            //                 case 'id':
-            //                     return this;
-            //                 break;
-            //             }
-            //         }
-            //     });
-            //
-            //     records.push({
-            //         getId: function() {
-            //             return 2;
-            //         },
-            //         get: function(type) {
-            //             switch (type) {
-            //                 case 'todo':
-            //                     return 'Buy beer';
-            //                 break;
-            //                 case 'completed':
-            //                     return true;
-            //                 break;
-            //                 case 'id':
-            //                     return this;
-            //                 break;
-            //             }
-            //         }
-            //     });
-            // }
-
             $(records).each(function(idx, record) {
                 var item = todoTemplate.clone();
-                // console.log(record);
+
                 item.attr('data-record-id', record.getId());
                 item.find('span').text(record.get('todo'));
+                
                 if(record.get('completed')) {
                     item.find('span').addClass('completed');
                     item.find('input[type="checkbox"]').attr('checked', 'checked');
