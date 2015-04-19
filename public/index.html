@@ -35,7 +35,7 @@
             </div>
 
             <div ng-switch-when="authenticated">
-                
+
                 <h1>Dropbox Todo App</h1>
 
                 <form class="form" name="addform" id="add-todo" no-validate ng-submit="addTask(task.description)">
@@ -43,7 +43,7 @@
                         <input type="text" name="task" required ng-model="task.description" class="form-control" placeholder="enter task..." />
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-success" ng-disabled="addform.$invalid"><i class="glyphicon glyphicon-pencil"></i>Add Todo</button>
+                        <button type="submit" class="btn btn-success" ng-disabled="loading || addform.$invalid"><i class="glyphicon glyphicon-pencil"></i>Add Todo</button>
                     </div>
                 </form>
 
