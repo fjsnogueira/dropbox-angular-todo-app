@@ -28,7 +28,7 @@ angular
                 .getDatastoreManager()
                 .openDefaultDatastore(function(err, Datastore) {
                     if (err) d.reject(err);
-                    
+
                     d.resolve({
                         onChange: onRecordChange(Datastore),
                         getTodos: getTodos(Datastore),
@@ -96,10 +96,13 @@ angular
             .then(function(authenticated) {
                 if(authenticated) {
                     $scope.usertype = 'authenticated';
+                    $scope.loading = true;
+
                     Dropbox
                         .getStore()
                         .then(function(store) {
                             $scope.store = store;
+                            $scope.loading = false;
 
                             $scope.updateTodos = function() {
                                 $scope.todos = $scope.store.getTodos();
