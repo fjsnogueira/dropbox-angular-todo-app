@@ -34,7 +34,8 @@
                 <button ng-click="authenticate()" class="btn btn-primary">Connect to Dropbox</button>
             </div>
 
-            <div ng-switch-when="authenticated" id="main">
+            <div ng-switch-when="authenticated">
+                
                 <h1>Dropbox Todo App</h1>
 
                 <form class="form" name="addform" id="add-todo" no-validate ng-submit="addTask(task.description)">
