@@ -1,0 +1,14 @@
+{
+  "name": "dropbox-demo",
+  "version": "1.0.0",
+  "description": "super simple demo using dropbox datastore to create a todo app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Stéphane P. Péricat <contact@pericat.net>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.12.3"
+  }
+}
