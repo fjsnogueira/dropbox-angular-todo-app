@@ -46,13 +46,15 @@ var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
         createTodo: function(e) {
             e.preventDefault();
 
-            TodosApp.todosList.insert({
-                todo: $('#todo').val(),
-                created: new Date(),
-                completed: false
-            });
+            if($('#todo').val() !== '') {
+                TodosApp.todosList.insert({
+                    todo: $('#todo').val(),
+                    created: new Date(),
+                    completed: false
+                });
 
-            $('#todo').val('');
+                $('#todo').val('');
+            }
         },
 
         updateTodos: function() {
