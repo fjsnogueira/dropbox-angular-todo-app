@@ -68,10 +68,11 @@ var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
                 var item = todoTemplate.clone();
 
                 item.attr('data-record-id', record.getId());
-                item.find('span').text(record.get('todo'));
+                item.find('.todo-idx').text(idx);
+                item.find('.todo-description').text(record.get('todo'));
 
                 if(record.get('completed')) {
-                    item.find('span').addClass('completed');
+                    item.find('.todo-description').toggleClass('completed');
                     item.find('input[type="checkbox"]').attr('checked', 'checked');
                 }
 
@@ -81,13 +82,13 @@ var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
             list.find('button').click(function(e) {
                 e.preventDefault();
 
-                var id = $(this).parents('li').attr('data-record-id');
+                var id = $(this).parents('tr').attr('data-record-id');
                 TodosApp.todosList.get(id).deleteRecord();
             });
 
             list.find('input[type="checkbox"]').click(function(e) {
                 var el = $(e.target),
-                    id = el.parents('li').attr('data-record-id');
+                    id = el.parents('tr').attr('data-record-id');
 
                 TodosApp.todosList.get(id).set('completed', el.is(':checked'));
             });
