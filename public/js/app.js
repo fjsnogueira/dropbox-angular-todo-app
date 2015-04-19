@@ -1,8 +1,7 @@
 angular
     .module('TodoApp', [])
     .factory('Dropbox', ['$window', '$q', function($window, $q) {
-        var client = new $window.Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
-            todoList = null;
+        var client = new $window.Dropbox.Client({key: 'vj7x3uop8rjbepo'});
 
         function init() {
             var d = $q.defer();
@@ -29,8 +28,9 @@ angular
                 .getDatastoreManager()
                 .openDefaultDatastore(function(err, Datastore) {
                     if (err) d.reject(err);
+                    
                     d.resolve({
-                        onChange: function(cb) {Datastore.recordsChanged.addListener(cb);},
+                        onChange: onRecordChange(Datastore),
                         getTodos: getTodos(Datastore),
                         addTask: addTask(Datastore),
                         removeTask: removeTask(Datastore),
@@ -40,6 +40,12 @@ angular
 
             return d.promise;
 
+        }
+
+        function onRecordChange(DataStore) {
+            return function(cb) {
+                DataStore.recordsChanged.addListener(cb);
+            };
         }
 
         function getTodos(DataStore) {
@@ -67,13 +73,7 @@ angular
         }
 
         function authenticate() {
-            client.authenticate();
-        }
-
-        function getAllItems() {
-            if(todoList) {
-                return todoList.query();
-            }
+            return client.authenticate();
         }
 
         return {
