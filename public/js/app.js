@@ -22,7 +22,6 @@ var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
                 client
                     .getDatastoreManager()
                     .openDefaultDatastore(function(err, Datastore) {
-                        console.log('HEREEE');
                         if (err) {
                             console.log('Datastore error: ' + err);
                         }
@@ -37,7 +36,8 @@ var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
                 $('#main').fadeIn();
             } else {
                 $('#main').fadeOut();
-                $( '#link-button' ).click( function() {
+                
+                $('#link-button').click( function() {
                     client.authenticate();
                 });
             }
@@ -67,7 +67,7 @@ var client = new Dropbox.Client({key: 'vj7x3uop8rjbepo'}),
 
                 item.attr('data-record-id', record.getId());
                 item.find('span').text(record.get('todo'));
-                
+
                 if(record.get('completed')) {
                     item.find('span').addClass('completed');
                     item.find('input[type="checkbox"]').attr('checked', 'checked');
